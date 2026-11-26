@@ -1,0 +1,31 @@
+using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
+namespace StudentManagementAPI.Services
+{
+    public class AuthorizeOperationFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            var method = context.MethodInfo;
+            var controller = method.DeclaringType;
+            var allowsAnonymous = method.IsDefined(typeof(AllowAnonymousAttribute), inherit: true) ||
+                                  controller?.IsDefined(typeof(AllowAnonymousAttribute), inherit: true) == true;
+            var requiresAuthorization = method.IsDefined(typeof(AuthorizeAttribute), inherit: true) ||
+                                        controller?.IsDefined(typeof(AuthorizeAttribute), inherit: true) == true;
+
+            if (!requiresAuthorization || allowsAnonymous)
+            {
+                return;
+            }
+
+            operation.Security ??= new List<OpenApiSecurityRequirement>();
+            operation.Security.Add(new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("Bearer", context.Document)] = new List<string>()
+            });
+        }
+    }
+}

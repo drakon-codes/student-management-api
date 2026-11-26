@@ -1,0 +1,24 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Local configuration and secrets
+appsettings*.json
+secrets.json
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# Publish output
+publish/
+
+!appsettings.example.json
